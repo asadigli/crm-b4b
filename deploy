@@ -1,0 +1,52 @@
+<?php
+define("NODIRECTACCESS", "NODIRECTACCESS");
+
+date_default_timezone_set("Asia/Baku");
+
+function updateAssetVersion() {
+  $file_header = "<?php\ndefined('BASEPATH') OR exit('No direct script access allowed'); \n\n";
+  $content = $file_header . "\$sys_config[\"asset_version\"]   = '".md5(microtime())."';\n";
+
+  $file_path = __DIR__ . "/application/cache/system_files/asset_version.php";
+  $fp = fopen($file_path,"wb");
+  fwrite($fp,$content);
+  fclose($fp);
+}
+
+if (file_exists("env.php")) {
+  require "env.php";
+}
+defined("ENVIRONMENT")  OR define("ENVIRONMENT", "development");
+defined("MODULENM")     OR define("MODULENM", "Arazmotors");
+defined("CHNLTOKEN")    OR define("CHNLTOKEN", NULL);
+
+if (php_sapi_name() === "cli") {
+  if (isset($argv[1]) && $argv[1] === "merge") {
+    exec("git add .");
+    exec("git commit -m'merging to production'");
+    exec("git pull origin master");
+    exec("git push origin master");
+    exec("git checkout production");
+    exec("git pull origin master");
+    exec("git push origin production");
+    exec("git checkout master");
+    if (defined("CHNLTOKEN")) {
+      exec("curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"`#".MODULENM."` Production merged, pending for deployment. - ".date('Y-m-d H:i:s')."\"}' https://hooks.slack.com/services/" . CHNLTOKEN);
+    }
+    exit();
+  } else {
+    if (ENVIRONMENT === "production") {
+      exec("git pull origin production");
+      exec("php cache.php --assets");
+      if (defined("CHNLTOKEN")) {
+        exec("curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"`#".MODULENM."` deployed! - ".date('Y-m-d H:i:s')."\"}' https://hooks.slack.com/services/" . CHNLTOKEN);
+      }
+      updateAssetVersion();
+      exit("deployed successfully \n");
+    } else {
+      exit("Production mode needed for deployment\n");
+    }
+  }
+}
+
+exit("Command not found\n");

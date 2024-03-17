@@ -1,0 +1,5 @@
+-- ALTER TABLE `sa_contact` ADD `type` ENUM('contact', 'partner') NULL DEFAULT NULL AFTER `user_id`;
+-- ALTER TABLE `sa_contact` ADD `phone` VARCHAR(20) NOT NULL AFTER `email`;
+-- ALTER TABLE `sa_contact` ADD `company_name` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;
+-- ALTER TABLE `sa_contact` ADD `city` VARCHAR(255) NULL DEFAULT NULL AFTER `company_name`;
+-- ALTER TABLE `sa_contact` ADD `address` VARCHAR(255) NULL DEFAULT NULL AFTER `phone`;

@@ -1,0 +1,10 @@
+.theme-primary .btn-danger-light {
+    background-color: #44beee17;
+    /* border-color: #44beee0f; */
+    color: #44beee;
+}
+
+.theme-primary .sm-blue li.current > a, .theme-primary .sm-blue li.highlighted > a {
+    background-color: #293c45;
+    color: #ffffff !important;
+}
